@@ -1,0 +1,28 @@
+{
+  "name": "jsonapilite",
+  "version": "0.0.0",
+  "description": "Generate json:api payload from your filesystem. It’s like sqlite, but for json:api. Useful for testing your json:api-related projects.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/**/**/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agarzola/jsonapilite.git"
+  },
+  "keywords": [
+    "json:api",
+    "filesystem",
+    "testing"
+  ],
+  "author": "Alfonso Gómez-Arzola <alfonso@chromatichq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agarzola/jsonapilite/issues"
+  },
+  "homepage": "https://github.com/agarzola/jsonapilite#readme",
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "pluralize": "^7.0.0"
+  }
+}
