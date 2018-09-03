@@ -8,17 +8,17 @@ module.exports = base => {
     return new Promise((resolve, reject) => {
       const request_url = url.parse(req.url, true, true);
       const { type, id, relationship, field } = parse_path(request_url.pathname);
-      const main_data = require(path.resolve(base, `${type}/${id}`));
+      const main_data = require(path.resolve(base, type, id));
       let data;
       let included = [];
 
       if (relationship && field) {
         data = _.get(main_data, `relationships.${field}`, {}).data || null;
       } else if (field) {
-        data = get_path_relationship({ field, main_data });
+        data = get_path_relationship({ base, field, main_data });
       } else {
         data = main_data;
-        included = get_query_param_relationships({ data, included, request_url });
+        included = get_query_param_relationships({ base, data, included, request_url });
       }
 
       if (data instanceof Error) {
@@ -47,7 +47,7 @@ function get_relationships({ data, key }) {
   return _.get(data, `relationships.${key}`);
 }
 
-function get_query_param_relationships({ data, included, request_url }) {
+function get_query_param_relationships({ base, data, included, request_url }) {
   if (_.get(request_url, 'query.include')) {
     const query_fields = request_url.query.include.split(',');
     return _.flattenDeep(included.concat(query_fields
@@ -57,7 +57,7 @@ function get_query_param_relationships({ data, included, request_url }) {
         if (Array.isArray(relationship.data)) {
           return relationship.data.map(item => {
             try {
-              return require(`${base}/${pluralize.plural(item.type)}/${item.id}`);
+              return require(path.resolve(base, pluralize.plural(item.type), item.id));
             } catch (e) {
               console.error(e.message);
               return null;
@@ -65,7 +65,7 @@ function get_query_param_relationships({ data, included, request_url }) {
           }).filter(item => item);
         } else {
           try {
-            return require(`${base}/${pluralize.plural(relationship.data.type)}/${relationship.data.id}`);
+            return require(path.resolve(base, pluralize.plural(relationship.data.type), relationship.data.id));
           } catch (e) {
             console.error(e.message);
             return null;
@@ -76,12 +76,12 @@ function get_query_param_relationships({ data, included, request_url }) {
   }
 }
 
-function get_path_relationship({ field, main_data }) {
+function get_path_relationship({ base, field, main_data }) {
   const relationship = _.get(main_data, `relationships.${field}`);
   if (Array.isArray(relationship.data)) {
     return relationship.data.map(item => {
       try {
-        return require(`${base}/${pluralize.plural(item.type)}/${item.id}`);
+        return require(path.resolve(base, pluralize.plural(item.type), item.id));
       } catch (e) {
         console.error(e.message);
         return null;
@@ -89,7 +89,7 @@ function get_path_relationship({ field, main_data }) {
     }).filter(item => item);
   } else {
     try {
-      return require(`${base}/${pluralize.plural(relationship.data.type)}/${relationship.data.id}`);
+      return require(path.resolve(base, pluralize.plural(relationship.data.type), relationship.data.id));
     } catch (e) {
       console.error(e.message);
       return null;
