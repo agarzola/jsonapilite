@@ -1,6 +1,6 @@
 {
   "name": "jsonapilite",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Generate json:api payload from your filesystem. It’s like sqlite, but for json:api. Useful for testing your json:api-related projects.",
   "main": "index.js",
   "scripts": {
